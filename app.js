@@ -6,7 +6,7 @@ import { config } from './src/config/index.js'
 const app = express()
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://saalcazar2.mitiendanube.com/'],
+  origin: ['http://localhost:5173', 'https://saalcazar2.mitiendanube.com/', 'https://nubepilot.vercel.app/'],
   credentials: true
 }))
 
