@@ -14,14 +14,14 @@ tiendanubeClient.interceptors.request.use((config) => {
   return config
 })
 
-export const openaiClient = axios.create({
-  baseURL: 'https://api.openai.com/v1',
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
+// export const openaiClient = axios.create({
+//   baseURL: 'https://api.openai.com/v1',
+//   headers: {
+//     'Content-Type': 'application/json'
+//   }
+// })
 
-openaiClient.interceptors.request.use((config) => {
-  config.headers.Authorization = `Bearer ${process.env.OPENAI_API_KEY}`
-  return config
-})
+// openaiClient.interceptors.request.use((config) => {
+//   config.headers.Authorization = `Bearer ${process.env.OPENAI_API_KEY}`
+//   return config
+// })

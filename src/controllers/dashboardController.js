@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { tiendanubeService } from '../services/tiendanube.js'
-import { openaiService } from '../services/openai.js'
+// import { openaiService } from '../services/openai.js'
 
 const productViews = []
 
@@ -39,25 +39,25 @@ export const dashboardController = {
     }
   },
 
-  async getRecommendations (req, res) {
-    try {
-      const { startDate, endDate } = req.query
+  // async getRecommendations (req, res) {
+  //   try {
+  //     const { startDate, endDate } = req.query
 
-      const [products, orders, views] = await Promise.all([
-        tiendanubeService.getProducts(),
-        tiendanubeService.getOrders({ created_at_min: startDate, created_at_max: endDate }),
-        Promise.resolve([...productViews])
-      ])
+  //     const [products, orders, views] = await Promise.all([
+  //       tiendanubeService.getProducts(),
+  //       tiendanubeService.getOrders({ created_at_min: startDate, created_at_max: endDate }),
+  //       Promise.resolve([...productViews])
+  //     ])
 
-      const storeData = { products, orders, productViews: views }
-      const recommendations = await openaiService.generateRecommendations(storeData)
+  //     const storeData = { products, orders, productViews: views }
+  //     const recommendations = await openaiService.generateRecommendations(storeData)
 
-      res.json({ recommendations: JSON.parse(recommendations) })
-    } catch (error) {
-      console.error('Error generating recommendations:', error)
-      res.status(500).json({ error: 'Failed to generate recommendations' })
-    }
-  },
+  //     res.json({ recommendations: JSON.parse(recommendations) })
+  //   } catch (error) {
+  //     console.error('Error generating recommendations:', error)
+  //     res.status(500).json({ error: 'Failed to generate recommendations' })
+  //   }
+  // },
 
   async getProducts (req, res) {
     try {

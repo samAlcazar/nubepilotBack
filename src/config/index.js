@@ -12,9 +12,9 @@ export const config = {
   tracker: {
     scriptUrl: process.env.TRACKER_SCRIPT_URL || 'https://untrimmed-kirstin-rattiest.ngrok-free.dev/scripts/tracker.js'
   },
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY,
-    model: process.env.OPENAI_MODEL || 'gpt-4'
-  },
+  // openai: {
+  //   apiKey: process.env.OPENAI_API_KEY,
+  //   model: process.env.OPENAI_MODEL || 'gpt-4'
+  // },
   port: process.env.PORT || 3000
 }

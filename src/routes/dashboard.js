@@ -5,7 +5,7 @@ const router = Router()
 
 router.post('/inject-tracker-script', dashboardController.injectTrackerScript)
 router.get('/data', dashboardController.getDashboardData)
-router.get('/recommendations', dashboardController.getRecommendations)
+// router.get('/recommendations', dashboardController.getRecommendations)
 router.get('/products', dashboardController.getProducts)
 router.get('/orders', dashboardController.getOrders)
 router.post('/track-product-view', dashboardController.trackProductView)
