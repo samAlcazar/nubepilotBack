@@ -1,0 +1,9 @@
+GET http://localhost:3000/api/dashboard/products
+
+
+###
+GET http://localhost:3000/api/dashboard/orders
+
+
+###
+POST http://localhost:3000/api/dashboard/inject-tracker-script

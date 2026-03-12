@@ -7,6 +7,13 @@ export const tiendanubeService = {
     return response.data
   },
 
+  async injectTrackerScript () {
+    const response = await tiendanubeClient.post(`/${config.tiendanube.storeId}/scripts`, {
+      src: config.tracker.scriptUrl
+    })
+    return response.data
+  },
+
   async getOrders (params = {}) {
     try {
       const response = await tiendanubeClient.get(`/${config.tiendanube.storeId}/orders`, { params })

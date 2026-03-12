@@ -5,6 +5,19 @@ import { openaiService } from '../services/openai.js'
 const productViews = []
 
 export const dashboardController = {
+  async injectTrackerScript (req, res) {
+    try {
+      const result = await tiendanubeService.injectTrackerScript()
+      res.json({ success: true, data: result })
+    } catch (error) {
+      console.error('Error injecting tracker script:', error.response?.data || error.message)
+      res.status(error.response?.status || 500).json({
+        error: 'Failed to inject tracker script',
+        details: error.response?.data || null
+      })
+    }
+  },
+
   async getDashboardData (req, res) {
     try {
       const { startDate, endDate } = req.query

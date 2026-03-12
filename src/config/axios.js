@@ -1,9 +1,11 @@
 import axios from 'axios'
+import { config } from './index.js'
 
 export const tiendanubeClient = axios.create({
   baseURL: 'https://api.tiendanube.com/v1',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'User-Agent': config.tiendanube.userAgent
   }
 })
 

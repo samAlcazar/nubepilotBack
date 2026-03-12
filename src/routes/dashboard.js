@@ -3,6 +3,7 @@ import { dashboardController } from '../controllers/dashboardController.js'
 
 const router = Router()
 
+router.post('/inject-tracker-script', dashboardController.injectTrackerScript)
 router.get('/data', dashboardController.getDashboardData)
 router.get('/recommendations', dashboardController.getRecommendations)
 router.get('/products', dashboardController.getProducts)
