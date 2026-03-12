@@ -1,0 +1,25 @@
+{
+  "name": "nubepilot",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.30.0",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.7",
+    "express": "^5.2.1",
+    "openai": "^4.77.0"
+  },
+  "devDependencies": {
+    "standard": "^17.1.2"
+  }
+}
