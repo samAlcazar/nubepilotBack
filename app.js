@@ -1,9 +1,8 @@
 import express from 'express'
 import cors from 'cors'
-import dashboardRoutes from './src/routes/dashboard.js'
-import { config } from './src/config/index.js'
 
 const app = express()
+const PORT = process.env.PORT || 3000
 
 app.use(cors({
   origin: ['http://localhost:5173', 'https://saalcazar2.mitiendanube.com/', 'https://nubepilot.vercel.app/'],
@@ -12,12 +11,10 @@ app.use(cors({
 
 app.use(express.json())
 
-app.use('/api/dashboard', dashboardRoutes)
-
 app.get('/', (req, res) => {
   res.json({ message: 'NubePilot API', version: '1.0.0' })
 })
 
-app.listen(config.port, () => {
-  console.log(`Servidor en puerto ${config.port}`)
+app.listen(PORT, () => {
+  console.log(`Servidor en puerto ${PORT}`)
 })
