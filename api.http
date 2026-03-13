@@ -1,9 +1,9 @@
-GET http://localhost:3000/api/dashboard/products
+GET http://localhost:3000/api/tiendanube/products
 
 
 ###
-GET http://localhost:3000/api/dashboard/orders
+GET http://localhost:3000/api/tiendanube/coupons
 
 
 ###
-POST http://localhost:3000/api/dashboard/inject-tracker-script
+POST http://localhost:3000/api/tiendanube/inject-tracker-script
