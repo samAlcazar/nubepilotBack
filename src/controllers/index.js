@@ -53,7 +53,7 @@ export const analyticsController = {
     try {
       const metrics = getProductMetrics()
       const recommendations = metrics
-        .filter(m => m.purchases > m.views && (m.purchases - m.views) >= 100)
+        .filter(m => m.views > m.purchases && (m.views - m.purchases) >= 100)
         .map(m => ({
           product_id: m.product_id,
           message: 'Te recomendamos que hagas un descuento por el 10% del precio'
@@ -81,7 +81,11 @@ export const analyticsController = {
       const updatedVariant = await tiendanubeService.products.updateVariant(
         product_id,
         variant.id,
-        { price: newPrice, promotional_price: variant.price }
+        {
+          price: variant.price,
+          compare_at_price: variant.price,
+          promotional_price: newPrice
+        }
       )
 
       res.json({

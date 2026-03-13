@@ -1,9 +1,209 @@
-GET http://localhost:3000/api/tiendanube/products
+@baseUrl = http://localhost:3000
+@storeId = 7390235
+@productId = 330506716
+@couponId = {{createCoupon.response.body.id}}
+@orderId = {{getOrders.response.body[0].id}}
 
+# ─────────────────────────────────────────
+# 1. HEALTH CHECK
+# ─────────────────────────────────────────
+
+GET {{baseUrl}}/
 
 ###
-GET http://localhost:3000/api/analytics/product-metrics
 
+# ─────────────────────────────────────────
+# 2. EVENTOS
+# ─────────────────────────────────────────
+
+# Registrar vista de producto
+# @name createProductView
+POST {{baseUrl}}/api/events/product-view
+Content-Type: application/json
+
+{
+  "store_id": 7390235,
+  "product_id": 987654,
+  "product_name": "Sombrero Andino",
+  "url": "https://saalcazar2.mitiendanube.com/productos/sombrero-andino"
+}
 
 ###
-POST http://localhost:3000/api/tiendanube/inject-tracker-script
+
+# Registrar otra vista (mismo producto)
+POST {{baseUrl}}/api/events/product-view
+Content-Type: application/json
+
+{
+  "store_id": 7390235,
+  "product_id": 987654,
+  "product_name": "Sombrero Andino",
+  "timestamp": "2026-03-13T10:00:00.000Z",
+  "url": "https://saalcazar2.mitiendanube.com/productos/sombrero-andino"
+}
+
+###
+
+# ─────────────────────────────────────────
+# 3. ANALYTICS
+# ─────────────────────────────────────────
+
+# Obtener vistas agrupadas por producto
+GET {{baseUrl}}/api/analytics/product-views
+
+###
+
+# Guardar métricas de producto (sin recomendación: purchases << views)
+POST {{baseUrl}}/api/analytics/product-metrics
+Content-Type: application/json
+
+{
+  "product_id": 330506716,
+  "views": 150,
+  "purchases": 12
+}
+
+###
+
+# Guardar métricas que SÍ disparan recomendación (purchases > views + 100)
+POST {{baseUrl}}/api/analytics/product-metrics
+Content-Type: application/json
+
+{
+  "product_id": 330506718,
+  "views": 50,
+  "purchases": 200
+}
+
+###
+
+# Obtener todas las métricas guardadas
+GET {{baseUrl}}/api/analytics/product-metrics
+
+###
+
+# Obtener recomendaciones de descuento
+# (requiere haber cargado métricas antes)
+GET {{baseUrl}}/api/analytics/discount-recommendations
+
+###
+
+# Aplicar descuento del 10% a un producto real
+POST {{baseUrl}}/api/analytics/apply-discount
+Content-Type: application/json
+
+{
+  "product_id": 330506716,
+  "discount_percentage": 50
+}
+
+###
+
+# ─────────────────────────────────────────
+# 4. PRODUCTOS (Tiendanube)
+# ─────────────────────────────────────────
+
+# Obtener todos los productos
+GET {{baseUrl}}/api/tiendanube/products
+
+###
+
+# Obtener producto por ID
+GET {{baseUrl}}/api/tiendanube/products/{{productId}}
+
+###
+
+# ─────────────────────────────────────────
+# 5. CATEGORÍAS (Tiendanube)
+# ─────────────────────────────────────────
+
+# Obtener todas las categorías
+GET {{baseUrl}}/api/tiendanube/categories
+
+###
+
+# Obtener categoría por ID (reemplazar con ID real)
+GET {{baseUrl}}/api/tiendanube/categories/1234567
+
+###
+
+# ─────────────────────────────────────────
+# 6. CUPONES (Tiendanube)
+# ─────────────────────────────────────────
+
+# Crear cupón
+# @name createCoupon
+POST {{baseUrl}}/api/tiendanube/coupons
+Content-Type: application/json
+
+{
+  "code": "HACKATON2026",
+  "type": "percentage",
+  "value": "15.00",
+  "min_price_threshold": "0.00",
+  "max_uses": 100
+}
+
+###
+
+# Listar todos los cupones
+GET {{baseUrl}}/api/tiendanube/coupons
+
+###
+
+# Obtener cupón por ID (reemplazar con ID real)
+GET {{baseUrl}}/api/tiendanube/coupons/{{couponId}}
+
+###
+
+# Actualizar cupón (reemplazar ID)
+PUT {{baseUrl}}/api/tiendanube/coupons/{{couponId}}
+Content-Type: application/json
+
+{
+  "value": "20.00",
+  "max_uses": 50
+}
+
+###
+
+# Eliminar cupón (reemplazar ID)
+DELETE {{baseUrl}}/api/tiendanube/coupons/{{couponId}}
+
+###
+
+# ─────────────────────────────────────────
+# 7. PEDIDOS (Tiendanube)
+# ─────────────────────────────────────────
+
+# Listar pedidos
+# @name getOrders
+GET {{baseUrl}}/api/tiendanube/orders
+
+###
+
+# Obtener pedido por ID (reemplazar con ID real)
+GET {{baseUrl}}/api/tiendanube/orders/{{orderId}}
+
+###
+
+# ─────────────────────────────────────────
+# 8. DESCUENTOS (Tiendanube)
+# Nota: puede devolver 404 según config de la tienda
+# ─────────────────────────────────────────
+
+# Listar descuentos
+GET {{baseUrl}}/api/tiendanube/discounts
+
+###
+
+# Crear descuento
+POST {{baseUrl}}/api/tiendanube/discounts
+Content-Type: application/json
+
+{
+  "type": "percentage",
+  "value": "10.00"
+}
+
+###
