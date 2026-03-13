@@ -2,7 +2,7 @@ GET http://localhost:3000/api/tiendanube/products
 
 
 ###
-GET http://localhost:3000/api/tiendanube/coupons
+GET http://localhost:3000/api/tiendanube/orders
 
 
 ###

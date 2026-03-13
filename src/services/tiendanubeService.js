@@ -31,6 +31,11 @@ export const tiendanubeService = {
     getById: (id) => makeRequest(`/products/${id}`)
   },
 
+  categories: {
+    getAll: () => makeRequest('/categories'),
+    getById: (id) => makeRequest(`/categories/${id}`)
+  },
+
   coupons: {
     create: (data) => makeRequest('/coupons', { method: 'POST', body: JSON.stringify(data) }),
     getAll: () => makeRequest('/coupons'),

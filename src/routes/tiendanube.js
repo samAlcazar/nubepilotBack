@@ -6,6 +6,9 @@ const router = Router()
 router.get('/products', tiendanubeController.products.getAll)
 router.get('/products/:id', tiendanubeController.products.getById)
 
+router.get('/categories', tiendanubeController.categories.getAll)
+router.get('/categories/:id', tiendanubeController.categories.getById)
+
 router.post('/coupons', tiendanubeController.coupons.create)
 router.get('/coupons', tiendanubeController.coupons.getAll)
 router.get('/coupons/:id', tiendanubeController.coupons.getById)

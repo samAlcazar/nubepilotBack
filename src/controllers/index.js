@@ -56,6 +56,26 @@ export const tiendanubeController = {
     }
   },
 
+  categories: {
+    getAll: async (req, res, next) => {
+      try {
+        const categories = await tiendanubeService.categories.getAll()
+        res.json(categories)
+      } catch (error) {
+        next(error)
+      }
+    },
+    getById: async (req, res, next) => {
+      try {
+        const { id } = req.params
+        const category = await tiendanubeService.categories.getById(id)
+        res.json(category)
+      } catch (error) {
+        next(error)
+      }
+    }
+  },
+
   coupons: {
     create: async (req, res, next) => {
       try {
