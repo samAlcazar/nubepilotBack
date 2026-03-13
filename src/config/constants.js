@@ -1,7 +1,7 @@
 export const TIENDANUBE_CONFIG = {
   STORE_ID: '7390235',
   BASE_URL: 'https://api.tiendanube.com',
-  ACCESS_TOKEN: 'bcc9ea59470b011b72fcaf1ae1b9dad0c9b91c03',
+  ACCESS_TOKEN: '7a588eb8f36969a2aa12ec28f2d7ede53b227225',
   USER_AGENT: 'NubePilot (nubepilot@hackathon.com)'
 }
 

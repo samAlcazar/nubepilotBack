@@ -28,7 +28,9 @@ const makeRequest = async (endpoint, options = {}) => {
 export const tiendanubeService = {
   products: {
     getAll: () => makeRequest('/products'),
-    getById: (id) => makeRequest(`/products/${id}`)
+    getById: (id) => makeRequest(`/products/${id}`),
+    updateVariant: (productId, variantId, data) => 
+      makeRequest(`/products/${productId}/variants/${variantId}`, { method: 'PUT', body: JSON.stringify(data) })
   },
 
   categories: {

@@ -1,4 +1,17 @@
 export const productViews = []
+export const productMetrics = []
+
+export const updateProductMetrics = (productId, data) => {
+  const existing = productMetrics.find(p => p.product_id === productId)
+  if (existing) {
+    Object.assign(existing, data)
+  } else {
+    productMetrics.push({ product_id: productId, ...data })
+  }
+  return productMetrics
+}
+
+export const getProductMetrics = () => productMetrics
 
 export const groupEventsByProductId = (events) => {
   const grouped = events.reduce((acc, event) => {

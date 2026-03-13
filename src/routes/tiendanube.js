@@ -5,6 +5,7 @@ const router = Router()
 
 router.get('/products', tiendanubeController.products.getAll)
 router.get('/products/:id', tiendanubeController.products.getById)
+router.put('/products/:productId/variants/:variantId', tiendanubeController.products.updateVariant)
 
 router.get('/categories', tiendanubeController.categories.getAll)
 router.get('/categories/:id', tiendanubeController.categories.getById)

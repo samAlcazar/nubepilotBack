@@ -1,4 +1,4 @@
-import { productViews, groupEventsByProductId } from '../utils/analytics.js'
+import { productViews, groupEventsByProductId, productMetrics, updateProductMetrics, getProductMetrics } from '../utils/analytics.js'
 import tiendanubeService from '../services/tiendanubeService.js'
 
 export const eventsController = {
@@ -32,6 +32,67 @@ export const analyticsController = {
     } catch (error) {
       next(error)
     }
+  },
+  saveProductMetrics: (req, res, next) => {
+    try {
+      const { product_id, views, purchases } = req.body
+      const metrics = updateProductMetrics(product_id, { views, purchases })
+      res.json(metrics)
+    } catch (error) {
+      next(error)
+    }
+  },
+  getProductMetrics: (req, res, next) => {
+    try {
+      res.json(getProductMetrics())
+    } catch (error) {
+      next(error)
+    }
+  },
+  getDiscountRecommendations: (req, res, next) => {
+    try {
+      const metrics = getProductMetrics()
+      const recommendations = metrics
+        .filter(m => m.purchases > m.views && (m.purchases - m.views) >= 100)
+        .map(m => ({
+          product_id: m.product_id,
+          message: 'Te recomendamos que hagas un descuento por el 10% del precio'
+        }))
+      res.json(recommendations)
+    } catch (error) {
+      next(error)
+    }
+  },
+  applyDiscount: async (req, res, next) => {
+    try {
+      const { product_id, discount_percentage } = req.body
+
+      const product = await tiendanubeService.products.getById(product_id)
+      const variant = product.variants?.[0]
+
+      if (!variant) {
+        return res.status(404).json({ error: 'Variant not found' })
+      }
+
+      const currentPrice = parseFloat(variant.price)
+      const discountAmount = currentPrice * (discount_percentage / 100)
+      const newPrice = (currentPrice - discountAmount).toFixed(2)
+
+      const updatedVariant = await tiendanubeService.products.updateVariant(
+        product_id,
+        variant.id,
+        { price: newPrice, promotional_price: variant.price }
+      )
+
+      res.json({
+        message: `Descuento del ${discount_percentage}% aplicado`,
+        original_price: variant.price,
+        new_price: newPrice,
+        variant: updatedVariant
+      })
+    } catch (error) {
+      next(error)
+    }
   }
 }
 
@@ -50,6 +111,15 @@ export const tiendanubeController = {
         const { id } = req.params
         const product = await tiendanubeService.products.getById(id)
         res.json(product)
+      } catch (error) {
+        next(error)
+      }
+    },
+    updateVariant: async (req, res, next) => {
+      try {
+        const { productId, variantId } = req.params
+        const variant = await tiendanubeService.products.updateVariant(productId, variantId, req.body)
+        res.json(variant)
       } catch (error) {
         next(error)
       }
