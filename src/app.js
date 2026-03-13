@@ -5,8 +5,34 @@ import tiendanubeRouter from './routes/tiendanube.js'
 
 const app = express()
 
+const defaultAllowedOrigins = [
+  'http://localhost:5173',
+  'https://saalcazar2.mitiendanube.com',
+  'https://nubepilot.vercel.app'
+]
+
+const envAllowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || '')
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean)
+
+const allowedOrigins = new Set([...defaultAllowedOrigins, ...envAllowedOrigins])
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://saalcazar2.mitiendanube.com/', 'https://nubepilot.vercel.app/'],
+  origin: (origin, callback) => {
+    // Allow same-server and non-browser requests (e.g. curl/Postman).
+    if (!origin) {
+      return callback(null, true)
+    }
+
+    const normalizedOrigin = origin.replace(/\/$/, '')
+
+    if (allowedOrigins.has(normalizedOrigin)) {
+      return callback(null, true)
+    }
+
+    return callback(new Error(`CORS blocked for origin: ${origin}`))
+  },
   credentials: true
 }))
 
