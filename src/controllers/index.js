@@ -1,5 +1,22 @@
+import OpenAI from 'openai'
 import { productViews, groupEventsByProductId, productMetrics, updateProductMetrics, getProductMetrics } from '../utils/analytics.js'
 import tiendanubeService from '../services/tiendanubeService.js'
+
+const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: 'https://api.groq.com/openai/v1'
+})
+
+const GROQ_MODEL = 'llama-3.3-70b-versatile'
+
+const buildRecommendationsWithFallback = (metrics) => {
+  return metrics
+    .filter(m => m.views > m.purchases && (m.views - m.purchases) >= 100)
+    .map(m => ({
+      product_id: m.product_id,
+      message: 'Te recomendamos que hagas un descuento por el 10% del precio'
+    }))
+}
 
 export const eventsController = {
   createProductView: (req, res, next) => {
@@ -49,15 +66,76 @@ export const analyticsController = {
       next(error)
     }
   },
-  getDiscountRecommendations: (req, res, next) => {
+  getDiscountRecommendations: async (req, res, next) => {
     try {
       const metrics = getProductMetrics()
-      const recommendations = metrics
-        .filter(m => m.views > m.purchases && (m.views - m.purchases) >= 100)
-        .map(m => ({
+
+      if (metrics.length === 0) {
+        return res.json([])
+      }
+
+      // Fetch real product data to give AI full context
+      let products = []
+      try {
+        products = await tiendanubeService.products.getAll()
+      } catch {
+        // If products can't be fetched, proceed with metrics only
+      }
+
+      const productMap = products.reduce((acc, p) => {
+        acc[String(p.id)] = p
+        return acc
+      }, {})
+
+      const context = metrics.map(m => {
+        const product = productMap[String(m.product_id)]
+        const variant = product?.variants?.[0]
+        const conversionRate = m.views > 0 ? ((m.purchases / m.views) * 100).toFixed(1) : '0.0'
+        return {
           product_id: m.product_id,
-          message: 'Te recomendamos que hagas un descuento por el 10% del precio'
-        }))
+          name: product?.name?.es || product?.name?.en || `Producto ${m.product_id}`,
+          price: variant?.price || 'desconocido',
+          promotional_price: variant?.promotional_price || null,
+          views: m.views,
+          purchases: m.purchases,
+          conversion_rate: `${conversionRate}%`
+        }
+      })
+
+      const systemPrompt = `Eres un analista de e-commerce experto. 
+Analiza los datos de productos y sus métricas de rendimiento y determina cuáles necesitan un descuento para impulsar las ventas.
+Responde ÚNICAMENTE con un array JSON válido, sin texto adicional, sin markdown, sin explicaciones fuera del JSON.
+Si ningún producto necesita descuento, responde con [].
+Formato de cada elemento: {"product_id": <número>, "message": "<recomendación concreta en español, máx 150 caracteres>"}`
+
+      const userPrompt = `Estos son los productos de la tienda con sus métricas actuales:
+${JSON.stringify(context, null, 2)}
+
+Recomienda descuentos solo para productos que realmente lo necesiten (por ejemplo, muchas visitas pero pocas compras, baja conversión, o precio elevado vs competencia estimada). Sé específico en cada mensaje de recomendación.`
+
+      let recommendations
+      try {
+        const completion = await groq.chat.completions.create({
+          model: GROQ_MODEL,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.4,
+          max_tokens: 1024
+        })
+
+        const raw = completion.choices[0]?.message?.content?.trim() || '[]'
+        recommendations = JSON.parse(raw)
+
+        if (!Array.isArray(recommendations)) {
+          throw new Error('AI response is not an array')
+        }
+      } catch {
+        // Fallback to hardcoded rule if AI fails
+        recommendations = buildRecommendationsWithFallback(metrics)
+      }
+
       res.json(recommendations)
     } catch (error) {
       next(error)
